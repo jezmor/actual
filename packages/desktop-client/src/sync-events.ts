@@ -461,7 +461,7 @@ export function listenForSyncEvent(store: AppStore, queryClient: QueryClient) {
           break;
         case 'token-expired':
           notif = null;
-          void store.dispatch(signOut());
+          void store.dispatch(signOut({ keepEncryptionKeys: true }));
           break;
         default:
           console.trace('unknown error', event);

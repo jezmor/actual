@@ -342,7 +342,12 @@ export function ConfigServer() {
       setError(error);
     } else {
       setLoading(false);
-      await dispatch(signOut());
+      // Saved encryption keys belong to the old server's files, so only
+      // drop them when the server actually changed.
+      const isSameServer =
+        currentUrl != null &&
+        httpUrl.replace(/\/+$/, '') === currentUrl.replace(/\/+$/, '');
+      await dispatch(signOut({ keepEncryptionKeys: isSameServer }));
       void navigate('/');
     }
   }

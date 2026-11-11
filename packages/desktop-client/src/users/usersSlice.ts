@@ -44,8 +44,10 @@ export const loggedIn = createAppAsyncThunk(
 
 export const signOut = createAppAsyncThunk(
   `${sliceName}/signOut`,
-  async (_, { dispatch }) => {
-    await send('subscribe-sign-out');
+  async (options: { keepEncryptionKeys?: boolean } | void, { dispatch }) => {
+    await send('subscribe-sign-out', {
+      keepEncryptionKeys: options ? !!options.keepEncryptionKeys : false,
+    });
 
     void dispatch(getUserData());
     void dispatch(loadGlobalPrefs());

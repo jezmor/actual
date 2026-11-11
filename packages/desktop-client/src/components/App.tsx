@@ -147,7 +147,7 @@ function AppInner() {
             button: {
               title: t('Go to login'),
               action: () => {
-                void dispatch(signOut());
+                void dispatch(signOut({ keepEncryptionKeys: true }));
               },
             },
           },

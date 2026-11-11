@@ -297,7 +297,12 @@ async function signIn(
   return {};
 }
 
-async function signOut() {
+// `keepEncryptionKeys` is for sign-outs the user didn't ask for (e.g. an
+// expired session): the saved keys stay so logging back in doesn't prompt
+// for the encryption password again.
+async function signOut({
+  keepEncryptionKeys = false,
+}: { keepEncryptionKeys?: boolean } = {}) {
   const token = await asyncStorage.getItem('user-token');
   const server = getServer();
   if (token && server) {
@@ -309,13 +314,17 @@ async function signOut() {
     }
   }
 
-  encryption.unloadAllKeys();
-  await asyncStorage.multiRemove([
-    'user-token',
-    'encrypt-keys',
-    'lastBudget',
-    'readOnly',
-  ]);
+  if (keepEncryptionKeys) {
+    await asyncStorage.multiRemove(['user-token', 'lastBudget', 'readOnly']);
+  } else {
+    encryption.unloadAllKeys();
+    await asyncStorage.multiRemove([
+      'user-token',
+      'encrypt-keys',
+      'lastBudget',
+      'readOnly',
+    ]);
+  }
   return 'ok';
 }
 
